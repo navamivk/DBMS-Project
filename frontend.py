@@ -10,10 +10,10 @@ st.subheader("A Chess Olympiad Reporting System")
 st.write("A Chess Olympiad is a large-scale event with several internationally-recognized rules governing it and professional matches extending for hours on end. Hence, it can be assumed that there will be a large amount of unorganized information that must be processed. ​Gambit is a software system that equips its users with a systematic way to create, retrieve and update relevant data through a curated SQL database. ​ ")
 opt = st.selectbox("Select by: ",['Tournament','Year','Player Name','Player ID','Match ID'])
 
-tournament = pd.read_csv(r"D:\Python Projects\Gambit\tournament.csv")
-player = pd.read_csv(r"D:\Python Projects\Gambit\player.csv")
-country = pd.read_csv(r"D:\Python Projects\Gambit\country.csv")
-matches = pd.read_csv(r"D:\Python Projects\Gambit\match.csv")
+tournament = pd.read_csv("./Data Files/tournament.csv")
+player = pd.read_csv("./Data Files/player.csv")
+country = pd.read_csv("./Data Files/country.csv")
+matches = pd.read_csv("./Data Files/match.csv")
 
 
 #tournament.columns.to_list()
