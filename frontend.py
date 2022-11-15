@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 
+import tournamentReport as tR
+
 page_title = "Welcome to Gambit"
 page_icon = ':horse:'
 layout = 'centered'
@@ -15,7 +17,6 @@ player = pd.read_csv("./Data Files/player.csv")
 country = pd.read_csv("./Data Files/country.csv")
 matches = pd.read_csv("./Data Files/match.csv")
 
-
 #tournament.columns.to_list()
 year = list((pd.DatetimeIndex(tournament['Start_Date']).year).unique()) 
 player_id = player["Player_ID"]
@@ -28,23 +29,35 @@ if opt == "Tournament":
     t = st.selectbox("Select tournament: ", tournament_name)
     df_selection = tournament.query("Tournament_Name == @t")
     st.dataframe(df_selection)
-elif opt == "Country":
-    c = st.selectbox("Select country: ", country)
-    df_selection = country.query("Country_Name == @c")
-    st.dataframe(df_selection)
-elif opt == "Year":
-    y = st.selectbox("Select year: ", year)
-    tournament['Year'] = pd.DatetimeIndex(tournament['Start_Date']).year
-    df_selection = tournament.query("Year == @y")
-    st.dataframe(df_selection)
+
+    if st.button('Generate Report'):
+        tR.generateReport(t)
+        st.success("Report generated!", icon = '♟️')
+
+        with open('./Outs/tournReport.pdf', 'rb') as f:
+            btn = st.download_button(
+                label="Download Report",
+                data=f,
+                file_name=f'{t}.pdf',
+                mime='application/pdf'
+            )        
+# elif opt == "Country":
+#     c = st.selectbox("Select country: ", country)
+#     df_selection = country.query("Country_Name == @c")
+#     st.dataframe(df_selection)
+# elif opt == "Year":
+#     y = st.selectbox("Select year: ", year)
+#     tournament['Year'] = pd.DatetimeIndex(tournament['Start_Date']).year
+#     df_selection = tournament.query("Year == @y")
+#     st.dataframe(df_selection)
 elif opt == "Player Name":
     p = st.selectbox("Select player: ", player_name)
     df_selection = player.query("Player_Name == @p")
     st.dataframe(df_selection)
-elif opt == "Player ID":
-    pid = st.selectbox("Select player ID: ", player_id)
-    df_selection = player.query("Player_ID == @pid")
-    st.dataframe(df_selection)
+# elif opt == "Player ID":
+#     pid = st.selectbox("Select player ID: ", player_id)
+#     df_selection = player.query("Player_ID == @pid")
+#     st.dataframe(df_selection)
 elif opt == "Match ID":
     mid = st.selectbox("Select Match ID: ", match_id)
     df_selection = matches.query("Match_ID == @mid")
