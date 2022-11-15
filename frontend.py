@@ -2,6 +2,22 @@ import streamlit as st
 import pandas as pd
 
 import tournamentReport as tR
+import playerReport as pR
+import matchReport as mR
+
+from pymongo import MongoClient
+import pymongo
+import pandas as pd
+import json
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = MongoClient(f"mongodb+srv://orectique:{os.getenv('DB_P')}@orectique.ixj7l.mongodb.net/?retryWrites=true&w=majority")
+
+db = client['chessOlympiad']
 
 page_title = "Welcome to Gambit"
 page_icon = ':horse:'
@@ -26,12 +42,13 @@ tournament_name = tournament["Tournament_Name"]
 match_id = matches["Match_ID"]
 
 if opt == "Tournament":
+    
     t = st.selectbox("Select tournament: ", tournament_name)
-    df_selection = tournament.query("Tournament_Name == @t")
-    st.dataframe(df_selection)
+    tournament = db['Tournament'].find_one({"Tournament_Name": t})
+    st.dataframe(pd.DataFrame(list(tournament)))
 
     if st.button('Generate Report'):
-        tR.generateReport(t)
+        tR.generateReport(db, t)
         st.success("Report generated!", icon = '♟️')
 
         with open('./Outs/tournReport.pdf', 'rb') as f:
@@ -52,13 +69,38 @@ if opt == "Tournament":
 #     st.dataframe(df_selection)
 elif opt == "Player Name":
     p = st.selectbox("Select player: ", player_name)
-    df_selection = player.query("Player_Name == @p")
-    st.dataframe(df_selection)
+    player = db['Player'].find_one({"Player_Name": p})
+    st.dataframe(pd.DataFrame(list(player)))
+
+    if st.button('Generate Report'):
+        pR.generateReport(db, p)
+        st.success("Report generated!", icon = '♟️')
+
+        with open('./Outs/playerReport.pdf', 'rb') as f:
+            btn = st.download_button(
+                label="Download Report",
+                data=f,
+                file_name=f'{p}.pdf',
+                mime='application/pdf'
+            )      
+
 # elif opt == "Player ID":
 #     pid = st.selectbox("Select player ID: ", player_id)
 #     df_selection = player.query("Player_ID == @pid")
 #     st.dataframe(df_selection)
 elif opt == "Match ID":
     mid = st.selectbox("Select Match ID: ", match_id)
-    df_selection = matches.query("Match_ID == @mid")
-    st.dataframe(df_selection)
+    match = db['Match'].find_one({"Match_ID": mid})
+    st.dataframe(pd.DataFrame(list(match)))
+
+    if st.button('Generate Report'):
+        mR.generateReport(db, mid)
+        st.success("Report generated!", icon = '♟️')
+
+    with open('./Outs/matchReport.pdf', 'rb') as f:
+        btn = st.download_button(
+            label="Download Report",
+            data=f,
+            file_name=f'{mid}.pdf',
+            mime='application/pdf'
+        )    
